@@ -6,18 +6,63 @@ use LWP::UserAgent;
 use XML::Parser::Lite::Tree;
 use Flickr::API::Request;
 use Flickr::API::Response;
+use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '0.03';
+our $VERSION = '0.07';
 
 sub new {
 	my $class = shift;
 	my $options = shift;
 	my $self = new LWP::UserAgent;
 	$self->{api_key} = $options->{key};
+	$self->{api_secret} = $options->{secret};
+
+	warn "You must pass an API key to the constructor" unless defined $self->{api_key};
+
 	bless $self, $class;
 	return $self;
+}
+
+sub sign_args {
+	my $self = shift;
+	my $args = shift;
+
+	my $sig  = $self->{api_secret};
+
+	foreach my $key (sort {$a cmp $b} keys %{$args}) {
+
+		my $value = (defined($args->{$key})) ? $args->{$key} : "";
+		$sig .= $key . $value;
+	}
+
+	return md5_hex($sig);
+}
+
+sub request_auth_url {
+	my $self  = shift;
+	my $perms = shift;
+	my $frob  = shift;
+
+	return undef unless defined $self->{api_secret} && length $self->{api_secret};
+
+	my %args = (
+		'api_key' => $self->{api_key},
+		'perms'   => $perms
+	);
+
+	if ($frob) {
+		$args{frob} = $frob;
+	}
+
+	my $sig = $self->sign_args(\%args);
+	$args{api_sig} = $sig;
+
+	my $uri = URI->new('http://flickr.com/services/auth');
+	$uri->query_form(%args);
+
+	return $uri;
 }
 
 sub execute_method {
@@ -31,9 +76,16 @@ sub execute_method {
 sub execute_request {
 	my ($self, $request) = @_;
 
-	$request->{api_args}->{method} = $request->{api_method};
+	$request->{api_args}->{method}  = $request->{api_method};
 	$request->{api_args}->{api_key} = $self->{api_key};
+
+	if (defined($self->{api_secret}) && length($self->{api_secret})){
+
+		$request->{api_args}->{api_sig} = $self->sign_args($request->{api_args});
+	}
+
 	$request->encode_args();
+
 
 	my $response = $self->request($request);
 	bless $response, 'Flickr::API::Response';
@@ -91,7 +143,8 @@ Flickr::API - Perl interface to the Flickr API
 
   use Flickr::API;
 
-  my $api = new Flickr::API({'key' => 'your_api_key'});
+  my $api = new Flickr::API({'key'    => 'your_api_key',
+                             'secret' => 'your_app_secret'});
 
   my $response = $api->execute_method('flickr.test.echo', {
 		'foo' => 'bar',
@@ -130,14 +183,28 @@ Constructs a C<Flickr::API::Request> object and executes it, returning a C<Flick
 
 =item C<execute_request($request)>
 
-Executes a C<Flickr::API::Request> object, returning a C<Flickr::API::Response> object.
+Executes a C<Flickr::API::Request> object, returning a C<Flickr::API::Response> object. Calls are signed
+if a secret was specified when creating the C<Flickr::API> object.
+
+=item C<request_auth_url($perms,$frob)>
+
+Returns a C<URI> object representing the URL that an application must redirect a user to for approving
+an authentication token.
+
+For web-based applications I<$frob> is an optional parameter.
+
+Returns undef if a secret was not specified when creating the C<Flickr::API> object.
+
 
 =back
 
 
 =head1 AUTHOR
 
-Copyright (C) 2004, Cal Henderson, E<lt>cal@iamcal.comE<gt>
+Copyright (C) 2004-2005, Cal Henderson, E<lt>cal@iamcal.comE<gt>
+
+Auth API patches provided by Aaron Straup Cope
+
 
 =head1 SEE ALSO
 

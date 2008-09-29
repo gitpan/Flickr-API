@@ -1,7 +1,7 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Flickr-API
-version:      0.09
+version:      1.00
 version_from: lib/Flickr/API.pm
 installdirs:  site
 requires:
@@ -11,7 +11,7 @@ requires:
     LWP::UserAgent:                0
     Test::More:                    0
     URI:                           1.18
-    XML::Parser::Lite::Tree:       0.03
+    XML::Parser::Lite::Tree:       0.06
 
 distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+generated_by: ExtUtils::MakeMaker version 6.30

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Flickr-API
-version:             1.03
+version:             1.04
 abstract:            ~
 license:             ~
 author:              ~
@@ -8,6 +8,7 @@ generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
     Digest::MD5:                   0
+    HTTP::Message:                 1.56
     HTTP::Request:                 0
     HTTP::Response:                0
     LWP::UserAgent:                0

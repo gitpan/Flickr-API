@@ -1,31 +1,30 @@
----
-abstract: unknown
-author:
-  - unknown
-build_requires:
-  ExtUtils::MakeMaker: 0
+--- #YAML:1.0
+name:               Flickr-API
+version:            1.09
+abstract:           ~
+author:  []
+license:            perl
+distribution_type:  module
 configure_requires:
-  ExtUtils::MakeMaker: 0
-dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.68, CPAN::Meta::Converter version 2.112621'
-license: perl
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
-name: Flickr-API
-no_index:
-  directory:
-    - t
-    - inc
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
 requires:
-  Digest::MD5: 0
-  HTTP::Message: 1.56
-  HTTP::Request: 0
-  HTTP::Response: 0
-  LWP::UserAgent: 0
-  Test::More: 0
-  URI: 1.18
-  XML::Parser::Lite::Tree: 0.06
+    Digest::MD5:          0
+    HTTP::Message:        1.56
+    HTTP::Request:        0
+    HTTP::Response:       0
+    LWP::UserAgent:       0
+    Test::More:           0
+    URI:                  1.18
+    XML::Parser::Lite::Tree:  0.06
 resources:
-  repository: https://github.com/iamcal/perl-Flickr-API
-version: 1.08
+    repository:  https://github.com/iamcal/perl-Flickr-API
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.55_02
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4
